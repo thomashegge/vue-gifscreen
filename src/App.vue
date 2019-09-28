@@ -7,7 +7,7 @@
       <DisplayGif v-bind:pics="pics"/>
     </main>
     <footer>
-      <Search label="Input your best phrase" :value="value" v-on:input="input" v-on:tryLuck="tryLuck"/>
+      <Search label="Input your best phrase" :value="value" v-on:input="input" v-on:bySong="bySongPlaying" v-on:tryLuck="tryLuck"/>
     </footer>
   </div>
 </template>
@@ -33,7 +33,11 @@ export default {
       pics: [],
       title: "Put gifs in your life and be happier, more productive and a better human being",
       dayOfWeek: new Date().getDay(),
-      value: ""
+      value: "",
+      song: {
+        title: "",
+        artist: ""
+      }
     }
   },
 
@@ -42,6 +46,7 @@ export default {
       console.log("searching for " + this.value)
       const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=wMovLRQDucFUSRddTHTifdAWNdfp0sOK&limit=20&offset=0&rating=G&lang=en&q=${this.value}`);
       const result = await response.json();
+      console.log("got " + result.data.length + " results")
       this.pics = result.data
     },
     input(e) {
@@ -54,6 +59,24 @@ export default {
     tryLuck() {
       this.value = `${weekDays[this.dayOfWeek]} ${this.timeOfDay}`;
       this.search()
+    },
+    async bySongPlaying() {
+      console.log("searching for song")
+      const response = await fetch(`https://api.spotify.com/v1/me/player/currently-playing`,
+        {
+          method: 'GET',
+          headers: new Headers({
+            'Authorization': 'Bearer ' + process.env.VUE_APP_SPOTIFY_AUTH,
+            'Content-Type': 'application/json'
+          }),
+        }
+      );
+      const result = await response.json();
+      console.dir(result)
+      this.song = {title: result.item.name, artist: result.item.artists[0].name}
+      this.value = result.item.name;
+      this.search();
+      // this.pics = result.data
     }
   },
   computed: {

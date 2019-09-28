@@ -2,6 +2,8 @@
   <div class="footer__content">
     <input type="text" v-bind:value="value" v-on:keydown="$emit('input', $event)" :placeholder="label">
     <span>or</span>
+    <button v-on:click="$emit('bySong')">Song playing</button>
+    <span>or</span>
     <button v-on:click="$emit('tryLuck')">Try my luck</button>
   </div>
 </template>
@@ -27,6 +29,6 @@ export default {
   }
 
   span, button {
-    margin-left: 20px;
+    margin-left: 28px;
   }
 </style>
